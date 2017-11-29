@@ -20,13 +20,18 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+import android.os.RemoteCallbackList;
 import android.os.RemoteException;
+import android.util.Log;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class BookManagerService extends Service {
+    public static final String TAG = "BookManagerService";
+
     private CopyOnWriteArrayList<Book> mBookList = new CopyOnWriteArrayList<>();
+    private RemoteCallbackList<IOnBookAddedListener> mBookAddListenerList = new RemoteCallbackList<>();
 
     public BookManagerService() {
     }
@@ -45,6 +50,26 @@ public class BookManagerService extends Service {
         @Override
         public void addBook(Book book) throws RemoteException {
             mBookList.add(book);
+
+            final int N = mBookAddListenerList.beginBroadcast();
+            Log.d(TAG, "mBookAddListenerList size: " + N);
+            for (int i = 0; i < N; i++) {
+                IOnBookAddedListener listener = mBookAddListenerList.getBroadcastItem(i);
+                if (listener != null) {
+                    listener.onNewBookAdded(book);
+                }
+            }
+            mBookAddListenerList.finishBroadcast();
+        }
+
+        @Override
+        public void registerBookAddListener(IOnBookAddedListener listener) throws RemoteException {
+            mBookAddListenerList.register(listener);
+        }
+
+        @Override
+        public void unRegisterBookAddListener(IOnBookAddedListener listener) throws RemoteException {
+            mBookAddListenerList.unregister(listener);
         }
     };
 }

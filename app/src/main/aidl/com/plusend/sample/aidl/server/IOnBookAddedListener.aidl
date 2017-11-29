@@ -14,23 +14,16 @@
  * limitations under the License.
  */
 
-// IBookManager.aidl
+// IOnBookAddedListener.aidl
 package com.plusend.sample.aidl.server;
 
 // Declare any non-default types here with import statements
 import com.plusend.sample.aidl.server.Book;
-import com.plusend.sample.aidl.server.IOnBookAddedListener;
 
-interface IBookManager {
+interface IOnBookAddedListener {
     /**
      * Demonstrates some basic types that you can use as parameters
      * and return values in AIDL.
      */
-    List<Book> getBooks();
-
-    void addBook(in Book book);
-
-    void registerBookAddListener(IOnBookAddedListener listener);
-
-    void unRegisterBookAddListener(IOnBookAddedListener listener);
+    void onNewBookAdded(in Book book);
 }
