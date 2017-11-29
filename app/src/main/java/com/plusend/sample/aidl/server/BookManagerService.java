@@ -18,6 +18,7 @@ package com.plusend.sample.aidl.server;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.RemoteCallbackList;
@@ -38,6 +39,9 @@ public class BookManagerService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
+        if (checkCallingOrSelfPermission("com.plusend.sample.permission.ACCESS_BOOK_SERVICE") == PackageManager.PERMISSION_DENIED) {
+            return null;
+        }
         return mBinder;
     }
 
